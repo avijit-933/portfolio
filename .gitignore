@@ -1,0 +1,17 @@
+# Virtual Environment
+venv/
+
+# Backend
+backend/__pycache__/
+backend/.env
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
