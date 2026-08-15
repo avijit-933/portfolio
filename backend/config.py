@@ -6,7 +6,11 @@ load_dotenv()
 
 # App settings
 PORT = int(os.getenv("PORT", 8000))
-HOST = os.getenv("HOST", "127.0.0.1")
+# Setting host to 0.0.0.0 ensures Render and other cloud platforms can route external traffic to your app
+HOST = os.getenv("HOST", "0.0.0.0")
+
+# Frontend URL (Used for CORS settings in main.py)
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
 # SMTP Configuration
 SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com")
