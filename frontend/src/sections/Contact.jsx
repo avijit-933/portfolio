@@ -39,8 +39,11 @@ const Contact = () => {
     e.preventDefault();
     setStatus({ loading: true, success: null, error: null });
 
+    // Fallback to portfolio-1.onrender.com if env variable is not present
+    const API_BASE = import.meta.env.VITE_API_URL || 'https://portfolio-22.onrender.com';
+
     try {
-      const response = await fetch('https://portfolio-22.onrender.com/api/contact', {
+      const response = await fetch(`${API_BASE}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,7 +52,8 @@ const Contact = () => {
       });
 
       if (!response.ok) {
-        throw new Error('API server is offline');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Server responded with status ${response.status}`);
       }
 
       const data = await response.json();
@@ -59,34 +63,20 @@ const Contact = () => {
         error: null,
       });
 
-      // Reset form
+      // Reset form on success
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (err) {
-      console.warn("FastAPI offline fallback: ", err.message);
+      console.error("API Request Failed:", err);
       
-      // Stand-alone fallback warning showing that smtp is simulated
-      setTimeout(() => {
-        setStatus({
-          loading: false,
-          success: "Message log simulated! (FastAPI server is currently offline, details logged in console)",
-          error: null,
-        });
-        
-        console.log("=== MOCK SMTP FORM SUBMISSION ===");
-        console.log("Name:", formData.name);
-        console.log("Email:", formData.email);
-        console.log("Subject:", formData.subject);
-        console.log("Message:", formData.message);
-        console.log("================================");
-        
-        // Reset form
-        setFormData({ name: '', email: '', subject: '', message: '' });
-      }, 800);
+      setStatus({
+        loading: false,
+        success: null,
+        error: err.message || "Failed to reach backend server. Please try again.",
+      });
     }
   };
 
   const handleDownloadResume = () => {
-    // Generate simple text-based resume files mock
     const element = document.createElement("a");
     const resumeText = `
 AVIJIT PATRA
